@@ -41,7 +41,7 @@ public class MyAdapter extends BaseAdapter {
         ViewHolder vh;
         if(convertView==null){
             vh=new ViewHolder();
-            convertView=inflater.inflate(R.layout.list_item, null);//注意导包，别导系统包
+            convertView=inflater.inflate(R.layout.list_item, null);
             vh.tv1=(TextView) convertView.findViewById(R.id.textView1);
             vh.tv2=(TextView) convertView.findViewById(R.id.textView2);
             convertView.setTag(vh);

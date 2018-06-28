@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
@@ -25,6 +26,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -41,6 +43,7 @@ public class NewNote extends AppCompatActivity {
     Datas data;
     int ids;
     String urls;
+    String imagePath;
 
     private String INTENT_TYPE  = "image/*";
     private int REQUESTCODE = 100;
@@ -134,12 +137,14 @@ public class NewNote extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.share:
-                Intent intent=new Intent(Intent.ACTION_SEND);
+                screenShot();
+                share();
+                /*Intent intent=new Intent(Intent.ACTION_SEND);
                 intent.setType("text/plain");
                 intent.putExtra(Intent.EXTRA_TEXT,
                         "标题："+ed1.getText().toString()+"    " +
                                 "内容："+ed2.getText().toString());
-                startActivity(intent);
+                startActivity(intent);*/
                 break;
 
             default:
@@ -296,4 +301,49 @@ public class NewNote extends AppCompatActivity {
 //    链接：https://www.jianshu.com/p/b168cbe50066
 //    來源：简书
 //    简书著作权归作者所有，任何形式的转载都请联系作者获得授权并注明出处。
+
+    //分享
+    private void share(){
+        if (imagePath != null){
+            Intent intent  = new Intent(Intent.ACTION_SEND); // 启动分享发送的属性
+            File file = new File(imagePath);
+            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));// 分享的内容
+            intent.setType("image/*");// 分享发送的数据类型
+            Intent chooser = Intent.createChooser(intent, "Share screen shot");
+            if(intent.resolveActivity(getPackageManager()) != null){
+                startActivity(chooser);
+            }
+        } else {
+            Toast.makeText(this, "先截屏，再分享", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    //截取屏幕的方法
+    private void screenShot() {
+        // 获取屏幕
+        View dView = getWindow().getDecorView();
+        dView.setDrawingCacheEnabled(true);
+        dView.buildDrawingCache();
+        Bitmap bmp = dView.getDrawingCache();
+        if (bmp != null)
+        {
+            try {
+                // 获取内置SD卡路径
+                String sdCardPath = Environment.getExternalStorageDirectory().getPath();
+                // 图片文件路径
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+                Date curDate = new Date(System.currentTimeMillis());//获取当前时间
+                String times = formatter.format(curDate);
+                imagePath = sdCardPath + File.separator + "screenshot" + times + ".png";
+
+                File file = new File(imagePath);
+                FileOutputStream os = new FileOutputStream(file);
+                bmp.compress(Bitmap.CompressFormat.PNG, 100, os);
+                os.flush();
+                os.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
