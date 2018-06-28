@@ -19,7 +19,8 @@ public class MyOpenHelper extends SQLiteOpenHelper {
                 "ids integer PRIMARY KEY autoincrement," +
                 "title text," +
                 "content text," +
-                "times text)");
+                "times text," +
+                "picture text)");
     }
 
     @Override

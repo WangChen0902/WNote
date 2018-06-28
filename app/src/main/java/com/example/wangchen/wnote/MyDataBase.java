@@ -3,6 +3,7 @@ package com.example.wangchen.wnote;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -45,40 +46,43 @@ public class MyDataBase {
     /*
      * 返回可能要修改的数据
      */
-    public Datas getTiandCon(int id){
+    public Datas getUpdate(int id){
         myDatabase = myHelper.getWritableDatabase();
-        Cursor cursor=myDatabase.rawQuery("select title,content from myNote where ids='"+id+"'" , null);
+        Cursor cursor = myDatabase.rawQuery("select title,content,picture from myNote where ids='"+id+"'" , null);
         cursor.moveToFirst();
-        String title=cursor.getString(cursor.getColumnIndex("title"));
-        String content=cursor.getString(cursor.getColumnIndex("content"));
-        Datas cun=new Datas(title,content);
+        String title = cursor.getString(cursor.getColumnIndex("title"));
+        String content = cursor.getString(cursor.getColumnIndex("content"));
+        String picture = cursor.getString(cursor.getColumnIndex("picture"));
+        Datas data = new Datas(title,content,picture);
         myDatabase.close();
-        return cun;
+        return data;
     }
 
     /*
      * 用来修改日记
      */
-    public void toUpdate(Datas cun){
+    public void toUpdate(Datas data){
         myDatabase = myHelper.getWritableDatabase();
         myDatabase.execSQL(
-                "update myNote set title='"+ cun.getTitle()+
-                        "',times='"+cun.getTimes()+
-                        "',content='"+cun.getContent() +
-                        "' where ids='"+ cun.getIds()+"'");
+                "update myNote set title = '" + data.getTitle()+
+                        "',times = '" + data.getTimes() +
+                        "',content = '" + data.getContent() +
+                        "',picture = '" + data.getPicture() +
+                        "' where ids = '" + data.getIds()+"'");
         myDatabase.close();
     }
 
     /*
      * 用来增加新的日记
      */
-    public void toInsert(Datas cun){
+    public void toInsert(Datas data){
         myDatabase = myHelper.getWritableDatabase();
-        myDatabase.execSQL("insert into myNote(title,content,times)values('"
-                + cun.getTitle()+"','"
-                +cun.getContent()+"','"
-                +cun.getTimes()
-                +"')");
+        myDatabase.execSQL("insert into myNote(title,content,times,picture)values('"
+                + data.getTitle() + "','"
+                + data.getContent() + "','"
+                + data.getTimes() + "','"
+                + data.getPicture()
+                + "')");
         myDatabase.close();
     }
 
